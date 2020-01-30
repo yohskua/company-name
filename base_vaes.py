@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# <nbformat>4</nbformat>
-
 import os
 from os import path
 from urllib.request import urlretrieve
@@ -330,67 +328,3 @@ class ConvolutionalVariationalAutoencoder(VariationalAutoencoder):
         x = Conv2D(1, kernel_size=2, padding='valid',
                activation='sigmoid')(x)
         return Model(decoder_input, x, name='convolutional_decoder')
-
-
-if __name__ == '__main__':
-
-    (X_tr, y_tr), (X_te, y_te) = fashion_mnist.load_data()
-    labels = [
-        "T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
-    ]
-
-    plt.figure(figsize=(10, 2))
-    for i in range(0, 5):
-        index = np.random.randint(0, X_tr.shape[0])
-        plt.subplot(1, 5, i + 1)
-        plt.imshow(X_tr[index], cmap="gray")
-        plt.title(labels[y_tr[index]])
-        plt.axis("off")
-    plt.show()
-
-    def min_max_scaling(X):
-        minx, maxx = np.min(X, axis=0), np.max(X, axis=0)
-        return (X - minx) / (maxx - minx)
-
-    X_tr, X_te = min_max_scaling(X_tr), min_max_scaling(X_te)
-
-    ae = Autoencoder(X_tr, X_te, y_tr, y_te, labels)
-    ae.design_and_compile_full_model()
-    ae.model_summary()
-    ae.train(epochs=2)
-    index = np.random.randint(0, ae.X_te.shape[0])
-    ae.plot_x_test_decoded_i(index)
-    ae.plot_latent_space()
-
-
-    vae = VariationalAutoencoder(X_tr, X_te, y_tr, y_te, labels)
-    vae.design_and_compile_full_model()
-    vae.model_summary()
-    vae.train(epochs=2)
-    vae.plot_sampled_prediction()
-    index = np.random.randint(0, vae.X_te.shape[0])
-    vae.plot_x_test_decoded_i(index)
-    vae.plot_latent_space()
-    pretrained = True
-
-
-    cvae = ConvolutionalVariationalAutoencoder(X_tr, X_te, y_tr, y_te, labels)
-    cvae.design_and_compile_full_model()
-    if pretrained:
-        url = 'https://github.com/ECE-Deep-Learning/courses_labs/releases/download/0.3/cvae_weights.h5'
-        pretrained_weights_file = os.path.join('.', 'cvae_weights.h5')
-        if not path.exists(pretrained_weights_file):
-            print('Downloading from %s to %s...' % (
-                url,
-                pretrained_weights_file
-            ))
-            urlretrieve(url, pretrained_weights_file)
-            print('Downloaded pre-trained weights')
-        cvae.model.load_weights("cvae_weights.h5")
-    else:
-        cvae.model_summary()
-        cvae.train(epochs=2)
-    cvae.plot_sampled_prediction()
-    index = np.random.randint(0, cvae.X_te.shape[0])
-    cvae.plot_x_test_decoded_i(index)
-    cvae.plot_latent_space()
