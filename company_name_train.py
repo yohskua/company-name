@@ -18,7 +18,7 @@ if __name__ == "__main__":
     argparser.add_argument("--intermediate-dim", default=256, type=int, help="")
     args = argparser.parse_args()
 
-    df = pd.read_csv("~/datasets/companies_sorted.csv", sep=",", nrows=100)
+    df = pd.read_csv("~/datasets/companies_sorted.csv", sep=",")
     df_tmp = df[df.industry.isin(["information technology and services", "internet"])]
     df_tmp = df_tmp[df_tmp["current employee estimate"] > 5]
     df_tmp.dropna(subset=["name"], inplace=True)
