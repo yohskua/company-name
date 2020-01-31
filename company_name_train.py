@@ -61,7 +61,7 @@ if __name__ == "__main__":
         print(e)
         raise (e)
 
-    for i in range(10):
+    for i in range(args.epochs):
         rnn_vae.train(epochs=1, batch_size=args.batch_size)
         if (i + 1) % frequence_saving == 0:
             df_preds["epoch_{}".format(i + 1)] = [
@@ -69,4 +69,3 @@ if __name__ == "__main__":
             ]
             # allows to check predictions early from disk. files should not be big
             df_preds.to_csv(os.path.join(output_path, "predictions.csv"), index=False)
-
