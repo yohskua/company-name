@@ -53,6 +53,14 @@ if __name__ == "__main__":
     current_date = datetime.datetime.now()
     current_date = current_date.strftime("%Y-%m-%d-%H%M")
     output_path = os.path.join(os.path.expanduser("~"), "tmp", current_date)
+    try:
+        os.makedirs(output_path)
+    except FileExistsError:
+        pass
+    except Exception as e:
+        print(e)
+        raise (e)
+
     for i in range(10):
         rnn_vae.train(epochs=1, batch_size=args.batch_size)
         if (i + 1) % frequence_saving == 0:
@@ -61,10 +69,4 @@ if __name__ == "__main__":
             ]
             # allows to check predictions early from disk. files should not be big
             df_preds.to_csv(os.path.join(output_path, "predictions.csv"), index=False)
-    try:
-        os.makedirs(output_path)
-    except FileExistsError:
-        pass
-    except Exception as e:
-        print(e)
-        raise (e)
+
